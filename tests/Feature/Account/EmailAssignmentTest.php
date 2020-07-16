@@ -4,6 +4,7 @@ namespace Tests\Feature\Account;
 
 use App\Events\Mship\AccountAltered;
 use App\Models\Mship\Account\Email;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Event;
@@ -129,10 +130,14 @@ class EmailAssignmentTest extends TestCase
     {
         $email = $this->user->fresh()->email;
 
-        $this->actingAs($this->user)
+        // Add a secondary email
+        $email = $this->user->secondaryEmails()->create(['email' => 'secondary.email@example.com']);
+        $email->verify();
+
+        $this->actingAs($this->user->fresh())
             ->get(route('mship.manage.email.assignments'))
             ->assertSee($email)
-            ->assertSee($this->user->verified_secondary_emails);
+            ->assertSee($this->user->fresh()->verified_secondary_emails->first()->email);
     }
 
     /** @test */

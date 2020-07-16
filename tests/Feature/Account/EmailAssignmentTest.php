@@ -4,7 +4,6 @@ namespace Tests\Feature\Account;
 
 use App\Events\Mship\AccountAltered;
 use App\Models\Mship\Account\Email;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Event;

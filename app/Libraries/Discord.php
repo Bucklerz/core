@@ -5,6 +5,7 @@ namespace App\Libraries;
 use App\Models\Discord\DiscordRole;
 use App\Models\Mship\Account;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
 class Discord
@@ -22,7 +23,7 @@ class Discord
     {
         $this->token = config('services.discord.token');
         $this->guild_id = config('services.discord.guild_id');
-        $this->base_url = config('services.discord.base_discord_uri').'/guilds';
+        $this->base_url = config('services.discord.base_discord_uri') . '/guilds';
     }
 
     public function updateUser(Account $account)
@@ -33,24 +34,37 @@ class Discord
 
     public function updateUserRoles(Account $account)
     {
+        $currentRoles = $this->getUserRoles($account);
+
         // Grant roles the user has permissions for
-        DiscordRole::all()->filter(function ($value) use ($account) {
-            return $account->hasPermissionTo($value['permission_id']);
-        })->each(function ($value) use ($account) {
-            $this->grantRoleById($account, $value['discord_id']);
+        DiscordRole::all()->filter(function (DiscordRole $role) use ($account) {
+            return $account->hasPermissionTo($role->permission_id);
+        })->each(function (DiscordRole $role) use ($account, $currentRoles) {
+            if (!$currentRoles->contains($role->discord_id)) {
+                $this->grantRoleById($account, $role->discord_id);
+            }
         });
 
         // Revoke roles the user no longer has access to
-        DiscordRole::all()->filter(function ($value) use ($account) {
-            return ! $account->hasPermissionTo($value['permission_id']);
-        })->each(function ($value) use ($account) {
-            $this->removeRoleById($account, $value['discord_id']);
+        DiscordRole::all()->filter(function (DiscordRole $role) use ($account) {
+            return !$account->hasPermissionTo($role->permission_id);
+        })->each(function (DiscordRole $role) use ($account, $currentRoles) {
+            if ($currentRoles->contains($role->discord_id)) {
+                $this->removeRoleById($account, $role->discord_id);
+            }
         });
     }
 
     public function updateUserNickname(Account $account)
     {
         $this->setNickname($account, $account->name);
+    }
+
+    public function getUserRoles(Account $account): Collection
+    {
+        $response = $this->sendDiscordAPIRequest("{$this->base_url}/{$this->guild_id}/members/{$account->discord_id}")->json();
+
+        return collect($response->roles);
     }
 
     public function grantRole(Account $account, string $role): bool
@@ -71,7 +85,7 @@ class Discord
     {
         $role_id = $this->findRole($role);
 
-        return $this->removeRoleById($role_id);
+        return $this->removeRoleById($account, $role_id);
     }
 
     public function removeRoleById(Account $account, int $role): bool
@@ -112,7 +126,7 @@ class Discord
             ->pluck('id')
             ->first();
 
-        return (int) $role_id;
+        return (int)$role_id;
     }
 
     protected function result(Response $response)

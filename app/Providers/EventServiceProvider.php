@@ -109,8 +109,8 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         RoleUpdated::class => [
-            UpdateDiscordRoles::class
-        ]
+            UpdateDiscordRoles::class,
+        ],
     ];
 
     /**

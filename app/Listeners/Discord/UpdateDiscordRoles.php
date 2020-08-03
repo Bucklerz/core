@@ -2,12 +2,8 @@
 
 namespace App\Listeners\Discord;
 
-use App\Events\Discord\DiscordUnlinked;
 use App\Events\Mship\RoleUpdated;
-use App\Exceptions\Discord\InvalidDiscordRemovalException;
-use App\Http\Controllers\Adm\Mship\Role;
 use App\Libraries\Discord;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class UpdateDiscordRoles implements ShouldQueue
@@ -32,7 +28,7 @@ class UpdateDiscordRoles implements ShouldQueue
     {
         $users = $event->role->users;
 
-        foreach ($users as $user){
+        foreach ($users as $user) {
             $this->discord->updateUser($user);
         }
     }

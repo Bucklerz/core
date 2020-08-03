@@ -4,7 +4,6 @@ namespace App\Console\Commands\ExternalServices;
 
 use App\Console\Commands\Command;
 use App\Libraries\Discord;
-use App\Models\Discord\DiscordRole;
 use App\Models\Mship\Account;
 use Illuminate\Support\Facades\Log;
 

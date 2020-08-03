@@ -22,7 +22,7 @@ class Discord
     {
         $this->token = config('services.discord.token');
         $this->guild_id = config('services.discord.guild_id');
-        $this->base_url = config('services.discord.base_discord_uri') . '/guilds';
+        $this->base_url = config('services.discord.base_discord_uri').'/guilds';
     }
 
     public function updateUser(Account $account)
@@ -112,7 +112,7 @@ class Discord
             ->pluck('id')
             ->first();
 
-        return (int)$role_id;
+        return (int) $role_id;
     }
 
     protected function result(Response $response)

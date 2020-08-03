@@ -64,7 +64,7 @@ class Discord
     {
         $this->setNickname($account, $account->name);
     }
-    
+
     public function grantRole(Account $account, string $role): bool
     {
         $role_id = $this->findRole($role);

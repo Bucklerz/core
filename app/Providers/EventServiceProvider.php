@@ -9,6 +9,7 @@ use App\Events\NetworkData\AtcSessionEnded;
 use App\Events\Smartcars\BidCompleted;
 use App\Listeners\Discord\RemoveDiscordUser;
 use App\Listeners\Discord\SetupDiscordUser;
+use App\Listeners\Discord\UpdateDiscordRoles;
 use App\Listeners\NetworkData\FlushEndorsementCache;
 use App\Listeners\Smartcars\EvaluateFlightCriteria;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;

@@ -55,7 +55,6 @@ class ManageDiscord extends Command
 
         foreach ($discordUsers as $account) {
             $this->discord->updateUser($account);
-            sleep(1);
         }
 
         $this->info($discordUsers->count().' user(s) updated on Discord.');

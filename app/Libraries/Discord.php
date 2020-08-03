@@ -34,6 +34,7 @@ class Discord
     {
         $this->updateUserRoles($account);
         $this->updateUserNickname($account);
+        sleep(1);
     }
 
     public function updateUserRoles(Account $account)

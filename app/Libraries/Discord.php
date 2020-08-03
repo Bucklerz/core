@@ -64,14 +64,7 @@ class Discord
     {
         $this->setNickname($account, $account->name);
     }
-
-    public function getUserRoles(Account $account): Collection
-    {
-        $response = $this->sendDiscordAPIRequest("{$this->base_url}/{$this->guild_id}/members/{$account->discord_id}")->json();
-
-        return collect($response->roles);
-    }
-
+    
     public function grantRole(Account $account, string $role): bool
     {
         $role_id = $this->findRole($role);

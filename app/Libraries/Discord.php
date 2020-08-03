@@ -23,7 +23,7 @@ class Discord
     {
         $this->token = config('services.discord.token');
         $this->guild_id = config('services.discord.guild_id');
-        $this->base_url = config('services.discord.base_discord_uri') . '/guilds';
+        $this->base_url = config('services.discord.base_discord_uri').'/guilds';
     }
 
     public function updateUser(Account $account)
@@ -40,14 +40,14 @@ class Discord
         DiscordRole::all()->filter(function (DiscordRole $role) use ($account) {
             return $account->hasPermissionTo($role->permission_id);
         })->each(function (DiscordRole $role) use ($account, $currentRoles) {
-            if (!$currentRoles->contains($role->discord_id)) {
+            if (! $currentRoles->contains($role->discord_id)) {
                 $this->grantRoleById($account, $role->discord_id);
             }
         });
 
         // Revoke roles the user no longer has access to
         DiscordRole::all()->filter(function (DiscordRole $role) use ($account) {
-            return !$account->hasPermissionTo($role->permission_id);
+            return ! $account->hasPermissionTo($role->permission_id);
         })->each(function (DiscordRole $role) use ($account, $currentRoles) {
             if ($currentRoles->contains($role->discord_id)) {
                 $this->removeRoleById($account, $role->discord_id);
@@ -126,7 +126,7 @@ class Discord
             ->pluck('id')
             ->first();
 
-        return (int)$role_id;
+        return (int) $role_id;
     }
 
     protected function result(Response $response)

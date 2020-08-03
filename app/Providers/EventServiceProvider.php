@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Events\Discord\DiscordLinked;
 use App\Events\Discord\DiscordUnlinked;
+use App\Events\Mship\RoleUpdated;
 use App\Events\NetworkData\AtcSessionEnded;
 use App\Events\Smartcars\BidCompleted;
 use App\Listeners\Discord\RemoveDiscordUser;
@@ -105,6 +106,10 @@ class EventServiceProvider extends ServiceProvider
         DiscordUnlinked::class => [
             RemoveDiscordUser::class,
         ],
+
+        RoleUpdated::class => [
+            UpdateDiscordRoles::class
+        ]
     ];
 
     /**

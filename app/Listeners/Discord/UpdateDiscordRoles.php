@@ -3,11 +3,14 @@
 namespace App\Listeners\Discord;
 
 use App\Events\Discord\DiscordUnlinked;
+use App\Events\Mship\RoleUpdated;
 use App\Exceptions\Discord\InvalidDiscordRemovalException;
+use App\Http\Controllers\Adm\Mship\Role;
 use App\Libraries\Discord;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class RemoveDiscordUser implements ShouldQueue
+class UpdateDiscordRoles implements ShouldQueue
 {
     /**
      * @var Discord
@@ -22,21 +25,15 @@ class RemoveDiscordUser implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param DiscordUnlinked $event
+     * @param RoleUpdated $event
      * @return void
-     * @throws InvalidDiscordRemovalException
      */
-    public function handle(DiscordUnlinked $event)
+    public function handle(RoleUpdated $event)
     {
-        $account = $event->account;
+        $users = $event->role->users;
 
-        $kick = $this->discord->kick($account);
-
-        if (! $kick) {
-            throw new InvalidDiscordRemovalException($account);
+        foreach ($users as $user){
+            $this->discord->updateUser($user);
         }
-
-        $account->discord_id = null;
-        $account->save();
     }
 }

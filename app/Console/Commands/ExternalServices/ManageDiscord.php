@@ -28,13 +28,10 @@ class ManageDiscord extends Command
     /** @var Discord */
     protected $discord;
 
-    /** @var Account */
-    protected $account;
-
     /**
      * Create a new command instance.
      *
-     * @return void
+     * @param Discord $discord
      */
     public function __construct(Discord $discord)
     {
@@ -58,10 +55,7 @@ class ManageDiscord extends Command
         }
 
         foreach ($discordUsers as $account) {
-            $this->account = $account;
-            $this->grantRoles();
-            $this->removeRoles();
-            $this->assignNickname();
+            $this->discord->updateUser($account);
         }
 
         $this->info($discordUsers->count().' user(s) updated on Discord.');
@@ -75,34 +69,5 @@ class ManageDiscord extends Command
         }
 
         return Account::where('discord_id', '!=', null)->get();
-    }
-
-    protected function assignNickname()
-    {
-        $this->discord->setNickname($this->account, $this->account->name);
-    }
-
-    protected function grantRoles()
-    {
-        $account = $this->account;
-        $discord = $this->discord;
-
-        DiscordRole::all()->filter(function ($value) use ($account) {
-            return $account->hasPermissionTo($value['permission_id']);
-        })->each(function ($value) use ($account, $discord) {
-            $discord->grantRoleById($account, $value['discord_id']);
-        });
-    }
-
-    protected function removeRoles()
-    {
-        $account = $this->account;
-        $discord = $this->discord;
-
-        DiscordRole::all()->filter(function ($value) use ($account) {
-            return ! $account->hasPermissionTo($value['permission_id']);
-        })->each(function ($value) use ($account, $discord) {
-            $discord->removeRoleById($account, $value['discord_id']);
-        });
     }
 }

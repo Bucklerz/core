@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Adm\Mship;
 
+use App\Events\Mship\RoleUpdated;
 use Illuminate\Support\Facades\Request;
 use Redirect;
 use Spatie\Permission\Models\Permission as PermissionData;
@@ -77,6 +78,8 @@ class Role extends \App\Http\Controllers\Adm\AdmController
             $role->syncPermissions(Request::input('permissions'));
         }
 
+        event(new RoleUpdated($role));
+
         return Redirect::route('adm.mship.role.index')->withSuccess("Role '".$role->name."' has been updated - don't forget to set the permissions properly!");
     }
 
@@ -91,8 +94,13 @@ class Role extends \App\Http\Controllers\Adm\AdmController
             return Redirect::route('adm.mship.role.index')->withError('You cannot delete the default role.');
         }
 
+        // Load users before we delete them
+        $role->load('users');
+
         // Let's delete!
         $role->delete();
+
+        event(new RoleUpdated($role));
 
         return Redirect::route('adm.mship.role.index')->withSuccess('Role, associated permissions and membership entries were all deleted.');
     }
